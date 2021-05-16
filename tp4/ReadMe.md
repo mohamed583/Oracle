@@ -89,9 +89,6 @@ CREATE ROLE DevSecOpsTeam;
 GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
 ---
 ```
-```sql
----
-```
 
 
  
@@ -99,12 +96,15 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
   
 
 ```sql
+GRANT DevT to dev1, dev2;
 ---
 ```
 ```sql
+GRANT TestT to tester1, tester2;
 ---
 ```
 ```sql
+GRANT DevSecOpsTeam to devsecops1, devsecops2;
 ---
 ```
 
@@ -112,10 +112,12 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
   
 
 ```sql
+REVOKE SELECT ANY TABLE FROM TestT;
 ---
 ```
 
  ```sql
+ GRANT SELECT ON emp TO TestT;
 ---
 ```
  
@@ -125,6 +127,7 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
   
 
  ```sql
+ GRANT SELECT ON emp TO PUBLIC;
 ---
 ```
 
@@ -133,6 +136,7 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
  
  
 ```sql
+REVOKE ALL PRIVILEGES ON emp FROM DevSecOpsTeam;
 ---
 ```
 
@@ -151,6 +155,17 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
 
 
 ```sql 
+
+CREATE PROFILE dev LIMIT
+SESSIONS_PER_USER UNLIMITED
+CPU_PER_SESSION 10000
+CPU_PER_CALL 1000
+CONNECT_TIME 45
+LOGICAL_READS_PER_SESSION DEFAULT
+LOGICAL_READS_PER_CALL 1000
+PRIVATE_SGA 25K
+PASSWORD_LIFE_TIME 60
+PASSWORD_REUSE_TIME 10;
 ---
 ```
 
@@ -168,6 +183,16 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
   * ***Durée de vie en jours du mot de passe:*** ***60***
   * ***Nombre maximal de réutilisations de mot de passe:*** ***10***
 ```sql 
+CREATE PROFILE tester LIMIT
+SESSIONS_PER_USER 5
+CPU_PER_SESSION UNLIMITED
+CPU_PER_CALL 3000
+CONNECT_TIME 45
+LOGICAL_READS_PER_SESSION DEFAULT
+LOGICAL_READS_PER_CALL 1000
+PRIVATE_SGA 25K
+PASSWORD_LIFE_TIME 60
+PASSWORD_REUSE_TIME 10;
 ---
 ```
 
@@ -182,12 +207,23 @@ GRANT ALL PRIVILEGES TO DevSecOpsTeam WITH ADMIN OPTION;
   * ***Durée de vie en jours du mot de passe:*** ***60***
   * ***Nombre maximal de réutilisations de mot de passe:*** ***10***
 
-```sql 
+```sql
+CREATE PROFILE devsecops LIMIT
+SESSIONS_PER_USER UNLIMITED
+CPU_PER_SESSION UNLIMITED
+CPU_PER_CALL 3000
+CONNECT_TIME 3600
+LOGICAL_READS_PER_SESSION DEFAULT
+LOGICAL_READS_PER_CALL 5000
+PRIVATE_SGA 80K
+PASSWORD_LIFE_TIME 60
+PASSWORD_REUSE_TIME 10;
 ---
 ```
 
   - **Attribuer à l'utilisateur "dev1", le profile qui lui correspond:** 
 ```sql
+ALTER USER dev1 PROFILE dev;
 ---
 ```
 
